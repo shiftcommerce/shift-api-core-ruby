@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Core gem for all shift commerce API gems'
   spec.description   = 'Core gem for all shift commerce API gems'
-  spec.homepage      = 'http://shiftcommerce.com'
+  spec.homepage      = 'https://github.com/shiftcommerce'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
