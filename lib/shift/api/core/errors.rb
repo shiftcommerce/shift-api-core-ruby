@@ -29,8 +29,29 @@ module Shift
         end
 
         class ServerError < ApiError
+          # Replace message with more useful error from the API
           def message
-            "Internal server error"
+            default_message = "Internal Server Error"
+
+            api_errors = env.response.body["errors"]
+            return default_message if api_errors.nil?
+
+            api_exception = api_errors[0].dig("meta", "exception")
+            api_exception ? api_exception : default_message
+          end
+
+          # Prepend API backtrace to the backtrace from the gem
+          def backtrace
+            original_backtrace = super
+            return nil if original_backtrace.nil?
+
+            api_errors = env.response.body["errors"]
+            return original_backtrace if api_errors.nil?
+
+            api_backtrace = api_errors[0].dig("meta", "backtrace")
+            return original_backtrace if api_backtrace.nil?
+
+            api_backtrace.map { |entry| "/<shift_api>#{entry}" }.concat(original_backtrace)
           end
         end
 
