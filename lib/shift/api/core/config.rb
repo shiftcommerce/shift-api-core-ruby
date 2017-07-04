@@ -54,6 +54,19 @@ module Shift
         #  defaults to {}
         #  Can also be an object responding to :call (i.e. a proc or lambda etc..)
         #  which must return a hash of headers to add
+        # @!attribute [rw] shift_api_key
+        #   Used to authenticate to the API
+        #   Defaults to nil
+        # @!attribute [rw] shift_account_reference
+        #   Specifies which account to use when authenticating with the API
+        #   Defaults to nil
+        # @!attribute [rw] oauth2_server_url
+        #   The base URL for the authentication server
+        #   Defaults to nil
+        # @!attribute [rw] oauth2_client_id
+        #   The client id for use in oauth2 auth
+        # @!attribute [rw] oauth2_client_secret
+        #   The client secret for use in oauth2 auth
         # @!attribute [rw] timeout
         #  The connection read timeout in seconds.  If data is not received in
         #  this time, an error is raised.
@@ -62,7 +75,7 @@ module Shift
         #  The connection open timeout in seconds - i.e. if it takes longer than
         #  this to open connection, an error is raised
         #  defaults to :default (15 seconds)
-        attr_reader :shift_root_url, :logger, :before_request_handlers, :after_response_handlers, :adapter, :headers, :timeout, :open_timeout
+        attr_reader :shift_root_url, :logger, :before_request_handlers, :after_response_handlers, :adapter, :headers, :timeout, :open_timeout, :shift_api_key, :shift_account_reference, :oauth2_server_url, :oauth2_client_id, :oauth2_client_secret
 
         def initialize
           @before_request_handlers = []
@@ -97,6 +110,26 @@ module Shift
 
         def open_timeout=(open_timeout)
           @open_timeout = open_timeout.tap { reconfigure }
+        end
+
+        def shift_api_key=(api_key)
+          @shift_api_key = api_key.tap { reconfigure }
+        end
+
+        def shift_account_reference=(account_reference)
+          @shift_account_reference = account_reference.tap { reconfigure }
+        end
+
+        def oauth2_server_url=(url)
+          @oauth2_server_url = url.tap { reconfigure }
+        end
+
+        def oauth2_client_id=(id)
+          @oauth2_client_id = id.tap { reconfigure }
+        end
+
+        def oauth2_client_secret=(secret)
+          @oauth2_client_secret = secret.tap { reconfigure }
         end
 
         # Registers a handler that is to be called before the request is made
