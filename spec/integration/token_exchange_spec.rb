@@ -7,7 +7,7 @@ require "spec_helper"
 RSpec.describe "token exchange integration", type: :api do
   let(:account_reference) { SecureRandom.uuid }
   let(:api_key) { SecureRandom.hex(16) }
-  let(:token_exchange_url) { "http://test.com/oauth2/application_token" }
+  let(:token_exchange_url) { "http://test.com/oauth2/token" }
   before(:each) do
     Shift::Api::Core::Config.new.batch_configure do |config|
       config.shift_root_url = "http://test.com/anyservice/v1"

@@ -14,7 +14,7 @@ module Shift
           # The account reference - used throughout
           let(:account_reference) { SecureRandom.uuid }
           # The token exchange url - used throughout and its value is not important to this test
-          let(:token_exchange_url) { "http://test.com/oauth2/application_token" }
+          let(:token_exchange_url) { "http://test.com/oauth2/token" }
           let(:client_id) { SecureRandom.uuid }
           let(:client_secret) { SecureRandom.uuid }
           # Mock connection

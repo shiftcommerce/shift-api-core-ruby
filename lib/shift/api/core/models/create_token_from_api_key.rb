@@ -11,7 +11,7 @@ module Shift
         end
 
         def self.table_name
-          "oauth2/application_token"
+          "oauth2/token"
         end
 
         def self.call(attrs)
