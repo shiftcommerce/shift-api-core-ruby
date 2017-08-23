@@ -37,7 +37,7 @@ module Shift
           end
 
           def fetch_token(env)
-            token = token_create_service.call client_id: client_id, client_secret: client_secret, scope: "all", api_key: api_key
+            token = token_create_service.call client_id: client_id, scope: "all", api_key: api_key
             #response = connection.run :post, "/oauth2/application_token", client_id: client_id, client_secret: client_secret, scope: "all", api_key: api_key
             env.request_headers.merge! "Authorization" => "Bearer #{token.access_token}"
           end
