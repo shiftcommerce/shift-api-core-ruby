@@ -119,14 +119,14 @@ RSpec.describe Shift::Api::Core::Model do
         expect(mock_custom_headers_middleware).to have_received(:new).with(mock_app, headers: mock_headers)
       end
 
-      it "should not add the custom headers middleware if headers are empty in the config" do
+      it "should add the custom headers middleware even if headers are empty in the config" do
         allow(config).to receive(:headers).and_return({})
         Shift::Api::Core::Model.reconfigure(config)
         connection = Shift::Api::Core::Model.connection
-        expect(connection.faraday.builder.handlers).not_to include mock_custom_headers_middleware
+        expect(connection.faraday.builder.handlers).to include mock_custom_headers_middleware
       end
 
-      it "should remove the custom headers middleware if headers get set to an empty hash in the config" do
+      it "should not remove the custom headers middleware if headers get set to an empty hash in the config" do
         allow(config).to receive(:headers).and_return(mock_headers)
         Shift::Api::Core::Model.reconfigure(config)
         # Load the connection so it is cached
@@ -134,7 +134,7 @@ RSpec.describe Shift::Api::Core::Model do
         allow(config).to receive(:headers).and_return({})
         Shift::Api::Core::Model.reconfigure(config)
         connection = Shift::Api::Core::Model.connection
-        expect(connection.faraday.builder.handlers).not_to include mock_custom_headers_middleware
+        expect(connection.faraday.builder.handlers).to include mock_custom_headers_middleware
       end
     end
 
@@ -231,6 +231,20 @@ RSpec.describe Shift::Api::Core::Model do
         error_middleware_idx = handlers.index(mock_error_middleware)
         status_middleware_idx = handlers.index(JsonApiClient::Middleware::Status)
         expect(error_middleware_idx).to be < status_middleware_idx
+      end
+    end
+
+    context "token exchanger middleware" do
+      let!(:mock_token_exchanger_middleware) { class_spy(Shift::Api::Core::Middleware::Oauth2TokenExchanger).as_stubbed_const }
+      it "should be inserted into the middleware before the custom config middleware" do
+        config.shift_api_key="anykey"
+        Shift::Api::Core::Model.reconfigure(config)
+        connection = Shift::Api::Core::Model.connection
+        handlers = connection.faraday.builder.handlers
+        expect(handlers).to include mock_token_exchanger_middleware
+        token_exchanger_middleware_idx = handlers.index(mock_token_exchanger_middleware)
+        config_middleware_idx = handlers.index(Shift::Api::Core::Middleware::CustomHeaders)
+        expect(token_exchanger_middleware_idx).to be > config_middleware_idx
       end
     end
 

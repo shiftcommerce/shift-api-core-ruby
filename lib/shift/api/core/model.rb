@@ -3,6 +3,7 @@ require "shift/api/core/middleware/logger"
 require "shift/api/core/middleware/custom_headers"
 require "shift/api/core/middleware/inspector"
 require "shift/api/core/middleware/error_handler"
+require "shift/api/core/middleware/oauth2_token_exchanger"
 module Shift
   module Api
     module Core
@@ -25,6 +26,7 @@ module Shift
           configure_timeout(config)
           configure_open_timeout(config)
           configure_headers(config)
+          configure_token_exchanger(config)
           reconfigure_subclasses(config)
         end
 
@@ -49,7 +51,7 @@ module Shift
 
         def self.configure_headers(config)
           headers = config.headers
-          connection.use(::Shift::Api::Core::Middleware::CustomHeaders, headers: headers) unless headers.empty?
+          connection.use(::Shift::Api::Core::Middleware::CustomHeaders, headers: headers)
         end
 
         def self.configure_logger(config)
@@ -76,6 +78,17 @@ module Shift
           open_timeout = config.open_timeout.to_s
           open_timeout = "0" if open_timeout == "disabled"
           connection.faraday.options.merge!(open_timeout: open_timeout.to_i) unless open_timeout == "default"
+        end
+
+        def self.configure_token_exchanger(config)
+          return if config.shift_api_key.nil?
+          connection.faraday.builder.insert_after(::Shift::Api::Core::Middleware::CustomHeaders,
+                                                   ::Shift::Api::Core::Middleware::Oauth2TokenExchanger,
+                                                   api_key: config.shift_api_key,
+                                                   account_reference: config.shift_account_reference,
+                                                   oauth_server_url: config.oauth2_server_url,
+                                                   client_id: config.oauth2_client_id,
+                                                   client_secret: config.oauth2_client_secret)
         end
 
         def self.reconfigure_subclasses(config)

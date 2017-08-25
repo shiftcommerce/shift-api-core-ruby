@@ -4,6 +4,7 @@ require "shift/api/core/model"
 require "shift/api/core/middleware"
 require "shift/api/core/request_id"
 require "shift/api/core/errors"
+require "shift/api/core/models/create_token_from_api_key"
 module Shift
   module Api
     #
