@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'webmock', '~> 2.3'
-  spec.add_runtime_dependency 'json_api_client', '~> 1.5'
+  spec.add_runtime_dependency 'json_api_client', '~> 1.1'
 end
