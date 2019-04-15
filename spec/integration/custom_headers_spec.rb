@@ -17,6 +17,7 @@ RSpec.describe "custom headers integration" do
     end
   end
 
+
   before(:each) { stub_request(:post, "http://test.com/v1/users").to_return(stub_response) }
 
   let(:stub_response) do
