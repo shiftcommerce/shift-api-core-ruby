@@ -19,6 +19,9 @@ module Shift
         class ClientError < ApiError
         end
 
+        class ServiceUnavailable < ApiError
+        end
+
         class AccessDenied < ClientError
         end
 
