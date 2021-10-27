@@ -6,13 +6,15 @@ module Shift
       # world in case we ever migrate from it.
       module Errors
         class ApiError < StandardError
-          attr_reader :env
-          def initialize(env)
+          attr_reader :env, :original_exception
+          
+          def initialize(env, original_exception)
             @env = env
+            @original_exception = original_exception
           end
 
           def self.from_jsonapi_client(ex)
-            new(ex.env)
+            new(ex.env, ex)
           end
         end
 
@@ -34,7 +36,7 @@ module Shift
         class ServerError < ApiError
           # Replace message with more useful error from the API
           def message
-            default_message = "Internal Server Error"
+            default_message = "Internal Server Error\n#{env.response.body}"
 
             api_errors = env.response.body["errors"]
             return default_message if api_errors.nil?
@@ -56,6 +58,9 @@ module Shift
 
             api_backtrace.map { |entry| "/<shift_api>#{entry}" }.concat(original_backtrace)
           end
+        end
+        
+        class InternalServerError < ServerError
         end
 
         class Conflict < ServerError
