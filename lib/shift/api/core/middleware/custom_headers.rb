@@ -6,9 +6,9 @@ module Shift
         # Faraday middleware to add extra headers to the request
         #
         class CustomHeaders < ::Faraday::Middleware
-          def initialize(app, headers:)
+          def initialize(app, options = {})
             self.app = app
-            self.headers = headers
+            self.headers = options.fetch(:headers)
           end
 
           # Adds the custom headers to the passed in environment
